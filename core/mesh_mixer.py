@@ -127,20 +127,29 @@ class MeshMixer:
         if self.all_points is None:
             self.get_meshes_data()
         cmds.hide(self.meshes)
-        self.mask_mesh, _ = create_temp_mesh(self.meshes[0], np.mean(self.all_points, axis=0))
+        self.mask_mesh, mask_fn = create_temp_mesh(self.meshes[0], np.mean(self.all_points, axis=0))
         if self.regions_mask:
             for region, mask in self.regions_mask.items():
                 mask_utils.set_vertex_color_mask(self.mask_mesh, region, mask)
-    
-    def delete_mask_mesh(self):
+        else:
+            num_vertices = mask_fn.numVertices
+            mask_values = np.ones(num_vertices, dtype=float)
+            mask_utils.set_vertex_color_mask(self.mask_mesh, mask_utils.NON_ASSIGNED_MASK_NAME, mask_values)
+
+    def hide_mask_mesh(self):
         if self.mask_mesh:
-            cmds.delete(self.mask_mesh)
-            self.mask_mesh = None
+            cmds.hide(self.mask_mesh)
 
     def get_mask_mesh(self):
         if not self.mask_mesh or not cmds.objExists(self.mask_mesh):
             self.create_mask_mesh()
         return self.mask_mesh
+    
+    def set_mask_mesh(self, mesh_name):
+        self.mask_mesh = None
+        if cmds.objExists(mesh_name):
+            self.mask_mesh = mesh_name
+
 
         
 

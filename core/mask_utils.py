@@ -3,6 +3,7 @@ import maya.mel as mel
 from maya.api import OpenMaya as om
 import numpy as np
 from mesh_mixer.core import maya_utils
+NON_ASSIGNED_MASK_NAME = "non-assigned"
 
 def create_vertex_color_mask(mesh_name, mask_name, default_color=(0, 0, 0, 1)):
     """
@@ -90,12 +91,7 @@ def list_vertex_color_masks(mesh_name):
     # Get all color sets
     color_sets = cmds.polyColorSet(mesh_name, query=True, allColorSets=True) or []
     
-    # Print the color sets
-    if color_sets:
-        print(f"Vertex color masks on '{mesh_name}':")
-        for i, cs in enumerate(color_sets):
-            print(f"  {i+1}. {cs}")
-    else:
+    if not color_sets:
         print(f"No vertex color masks found on '{mesh_name}'.")
     
     return color_sets
@@ -198,55 +194,61 @@ def delete_vertex_color_mask(mesh_name, mask_name):
     print(f"Deleted vertex color mask '{mask_name}' from '{mesh_name}'")
     return True
 
-def normalize_masks(masks):
-    """
-    Normalize the values of the given mask attributes on the specified mesh.
 
+def normalize_masks(masks_input):
+    """
+    Performs vectorized normalization on a dictionary of NumPy arrays representing weight layers for a 3D mesh.
+    
     Args:
-        mesh_name (str): The name of the mesh (transform node).
-        mask_attributes (list): A list of mask attribute names to normalize.
+        masks_input (dict): Dictionary where keys are layer names (strings) and values are NumPy arrays
+                             of shape (num_vertices) containing float weights.
+    
+    Returns:
+        dict: New dictionary with the same keys but normalized weight values according to the specified rules.
     """
-    num_vertices = len(list(masks.values())[0])
-    if 'non-assigned' not in masks:
-        masks['non-assigned'] = np.zeros(num_vertices)
-
-    zero_vertices = np.where(np.sum(list(masks.values()), axis=0) < 1e-5)[0]
-    if zero_vertices.size > 0:
-        masks['non-assigned'] = np.zeros(num_vertices)
-        masks['non-assigned'][zero_vertices] = 1
-
-    mask_names = list(masks.keys())
-    mask_values = list(masks.values())
-    mask_array = np.asarray(mask_values)
-    normalized_weights = np.zeros_like(mask_array, dtype=float)
-    non_asiggend_index = mask_names.index('non-assigned')
-    for i in range(mask_array.shape[1]):
-        vertex_weights = mask_array[:, i]
-        non_zero_indices = np.nonzero(vertex_weights)[0]
-        num_influences_for_vertex = len(non_zero_indices)
-
-        if num_influences_for_vertex > 1:
-            relevant_weights = vertex_weights[non_zero_indices]
-            sum_relevant_weights = np.sum(relevant_weights)
-            if sum_relevant_weights < 1:
-                normalized_weights[non_asiggend_index, i] = 1.0 - sum_relevant_weights
-                normalized_weights[non_zero_indices, i] = relevant_weights
-            else:
-                normalized_relevant_weights = relevant_weights / sum_relevant_weights
-                normalized_weights[non_zero_indices, i] = normalized_relevant_weights
-        elif num_influences_for_vertex == 1:
-            value = mask_array[non_zero_indices[0], i]
-            if value >= 1 or non_zero_indices[0] == non_asiggend_index:
-                # If the vertex has only one influence and it is the non-assigned mask, set it to 1.0
-                normalized_weights[non_zero_indices[0], i] = 1.0
-            else:# If the vertex has only one influence split the value between the non-assigned 
-                normalized_weights[non_asiggend_index, i] = 1.0 - value
-                normalized_weights[non_zero_indices[0], i] = value
-    result = dict()
-    for i, mask_attr in enumerate(mask_names):
-        # Set the normalized values back to the attribute
-        result[mask_attr] = normalized_weights[i]
-    return result
+    # Create a copy of the input dictionary to avoid modifying the original
+    normalized_layers = {}
+    
+    # Extract the non-assigned layer
+    non_assigned_layer = masks_input.get(NON_ASSIGNED_MASK_NAME, None)
+    if non_assigned_layer is None:
+        masks_input[NON_ASSIGNED_MASK_NAME] = np.ones_like(masks_input[list(masks_input.keys())[0]])
+    
+    # Calculate the sum of weights for each vertex (excluding "non-assigned")
+    sum_weights = np.zeros_like(non_assigned_layer)
+    for layer_name, weights in masks_input.items():
+        if layer_name != NON_ASSIGNED_MASK_NAME:
+            sum_weights += weights
+    
+    # Create boolean masks for vertices with sum >= 1 and sum < 1
+    sum_gte_one_mask = sum_weights >= 1.0
+    sum_lt_one_mask = ~sum_gte_one_mask
+    
+    # Process each layer and apply normalization
+    for layer_name, weights in masks_input.items():
+        if layer_name == NON_ASSIGNED_MASK_NAME:
+            # For "non-assigned" layer:
+            # - Set to 0 where sum >= 1
+            # - Set to (1 - sum) where sum < 1
+            normalized_weights = np.zeros_like(weights)
+            normalized_weights[sum_lt_one_mask] = 1.0 - sum_weights[sum_lt_one_mask]
+        else:
+            # Copy the original weights
+            normalized_weights = weights.copy()
+            
+            # For vertices with sum >= 1, normalize weights
+            if np.any(sum_gte_one_mask):
+                # Get the normalization factor for vertices with sum >= 1 (to preserve relative scale)
+                normalization_factor = sum_weights[sum_gte_one_mask]
+                
+                # Apply normalization only to vertices with sum >= 1
+                normalized_weights[sum_gte_one_mask] = weights[sum_gte_one_mask] / normalization_factor
+            
+            # Vertices with sum < 1 keep their original weights (already copied)
+        
+        normalized_layers[layer_name] = normalized_weights
+    
+    return normalized_layers
 
 def get_all_masks(mesh_name):
     """

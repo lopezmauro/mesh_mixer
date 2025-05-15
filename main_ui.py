@@ -5,11 +5,7 @@ from mesh_mixer.ui import mesh_mixer_ui
 from mesh_mixer.core import mesh_mixer
 from mesh_mixer.core import maya_utils
 from mesh_mixer.core import pyside_utils
-import importlib
-importlib.reload(mask_maker_ui)
-importlib.reload(mesh_mixer_ui)
-importlib.reload(mesh_mixer)
-importlib.reload(maya_utils)
+
 class MeshesWidget(QtWidgets.QWidget):
     has_items_Signal = QtCore.Signal(bool)
 
@@ -137,7 +133,7 @@ class MainWindow(QtWidgets.QDialog):
         self.mixer.get_region_masks()
         self.mixer.get_region_stats()
         self.mixer.get_latent_spaces()
-        self.mixer.delete_mask_mesh()
+        self.mixer.hide_mask_mesh()
         self.mixer.create_average_face()
         mixer_ui = mesh_mixer_ui.LatentMixer(self.mixer)
         mixer_ui.show()
