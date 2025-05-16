@@ -1,6 +1,6 @@
 # Mesh Mixer
 
-Mesh Mixer is a Python-based tool for exploring machine learning techniques applied to 3D mesh manipulation. It allows users to compres  meshes by region into PCA values, then mix and manipulate the latent space of those regions. 
+Mesh Mixer is a Python-based tool for exploring machine learning techniques applied to 3D mesh manipulation. It allows users to compress meshes by region into PCA values, then mix and manipulate the latent space of those regions.
 
 ⚠️ **Disclaimer**: This software is provided for educational and research purposes only. It is not intended for production use. Use at your own risk.
 
@@ -13,7 +13,7 @@ Mesh Mixer is a Python-based tool for exploring machine learning techniques appl
 - **Latent Space Mixing**: Explore and manipulate the latent space of 3D meshes using machine learning techniques.
 - **Integration with Maya**: Designed to work seamlessly within Autodesk Maya's environment.
 
-<video controls src="images/mesh mixer.mp4" title="Title"></video>
+[![Mesh Mixer Demonstration](https://img.youtube.com/vi/wud1j0bnOHs/0.jpg)](https://youtu.be/wud1j0bnOHs)
 
 ---
 
