@@ -5,7 +5,9 @@ from mesh_mixer.ui import mesh_mixer_ui
 from mesh_mixer.core import mesh_mixer
 from mesh_mixer.core import maya_utils
 from mesh_mixer.core import pyside_utils
-
+import importlib
+importlib.reload(mask_maker_ui)
+importlib.reload(mesh_mixer_ui)
 class MeshesWidget(QtWidgets.QWidget):
     has_items_Signal = QtCore.Signal(bool)
 

@@ -265,14 +265,12 @@ class LatentMixer(QtWidgets.QDialog):
 
         # Create main layout
         main_layout = QtWidgets.QHBoxLayout(self)
-
+        self.splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        main_layout.addWidget(self.splitter)
         # create region selector
-        #self.region_combo = QtWidgets.QComboBox()
-        #self.region_combo.currentIndexChanged.connect(self.refresh_plot)
-        #main_layout.addWidget(self.region_combo)
         main_mask_widget = QtWidgets.QWidget()
         mask_layout = QtWidgets.QVBoxLayout(main_mask_widget)
-        main_layout.addWidget(main_mask_widget)
+        self.splitter.addWidget(main_mask_widget)
         
         # Label for the list
         list_label = QtWidgets.QLabel("Available Regions:")
@@ -285,7 +283,7 @@ class LatentMixer(QtWidgets.QDialog):
 
         main_latent_widget = QtWidgets.QWidget()
         main_latent_layout = QtWidgets.QVBoxLayout(main_latent_widget)
-        main_layout.addWidget(main_latent_widget, 1)
+        self.splitter.addWidget(main_latent_widget)
         # main widget that will hold all latent widgets
         latent_widget = QtWidgets.QWidget()
         self.latent_layout = QtWidgets.QVBoxLayout(latent_widget)

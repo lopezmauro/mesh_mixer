@@ -1,6 +1,6 @@
 # Mesh Mixer
 
-Mesh Mixer is a Python-based tool for exploring machine learning techniques applied to 3D mesh manipulation. It allows users to mix and manipulate the latent space of 3D meshes, providing an educational and research-oriented platform for experimenting with mesh processing and machine learning.
+Mesh Mixer is a Python-based tool for exploring machine learning techniques applied to 3D mesh manipulation. It allows users to compres  meshes by region into PCA values, then mix and manipulate the latent space of those regions. 
 
 ⚠️ **Disclaimer**: This software is provided for educational and research purposes only. It is not intended for production use. Use at your own risk.
 
@@ -12,6 +12,8 @@ Mesh Mixer is a Python-based tool for exploring machine learning techniques appl
 - **Mask Creation**: Create and manage vertex color masks for specific regions of meshes.
 - **Latent Space Mixing**: Explore and manipulate the latent space of 3D meshes using machine learning techniques.
 - **Integration with Maya**: Designed to work seamlessly within Autodesk Maya's environment.
+
+<video controls src="images/mesh mixer.mp4" title="Title"></video>
 
 ---
 
@@ -83,8 +85,3 @@ Contributions are welcome! If you'd like to contribute, please fork the reposito
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
-
-## Acknowledgments
-
-- Autodesk Maya for providing a robust platform for 3D modeling and scripting.
-- The open-source community for providing inspiration and tools for this project.
