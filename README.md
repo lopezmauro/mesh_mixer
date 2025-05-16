@@ -13,9 +13,13 @@ Mesh Mixer is a Python-based tool for exploring machine learning techniques appl
 - **Latent Space Mixing**: Explore and manipulate the latent space of 3D meshes using machine learning techniques.
 - **Integration with Maya**: Designed to work seamlessly within Autodesk Maya's environment.
 
-[![Mesh Mixer Demonstration](https://img.youtube.com/vi/wud1j0bnOHs/0.jpg)](https://youtu.be/wud1j0bnOHs)
 
 ---
+#### Mask creation
+https://github.com/user-attachments/assets/fa38bc87-8e23-42c5-b947-5794d36b0fc2
+
+#### Latent interpolation
+https://github.com/user-attachments/assets/2fe4d957-e500-4bc3-bd09-97f946a7bbd0
 
 ## Installation
 
