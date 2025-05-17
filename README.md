@@ -31,7 +31,6 @@ https://github.com/user-attachments/assets/2fe4d957-e500-4bc3-bd09-97f946a7bbd0
 
 2. Install the required Python dependencies:
    - numpy
-   - scipy
    - scikit-learn
 
 3. Ensure Autodesk Maya is installed and properly configured to run Python scripts.
